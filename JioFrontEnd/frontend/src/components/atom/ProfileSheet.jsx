@@ -37,7 +37,7 @@ const ProfileSheet = () => {
                         {userData.isLoggedIn ? userData.user.name : "Guest"}
                     </p>
                     <Link
-                        href={`${userData.isLoggedIn ? "/" : "/Login"}`}
+                        href={`${userData.isLoggedIn ? "/" : "/login"}`}
                         className="rounded-full font-medium mt-4 text-base px-4 py-2 bg-pink-600"
                         onClick={() => {
                             setOpen(false);

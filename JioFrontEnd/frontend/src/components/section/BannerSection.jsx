@@ -40,6 +40,7 @@ async function BannerSectionContent({fetcher}) {
         {data?.map((vid) => (
           <CarouselItem key={vid.id} className="w-full max-w-[700px] h-[500px]">
             <Image
+            key = {vid.id}
               src={media(vid?.poster_path)}
               alt=""
               width={700}
