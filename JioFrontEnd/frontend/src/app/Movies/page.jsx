@@ -3,7 +3,6 @@ import CategoriesSection from "@/components/section/CategoriesSection";
 import JumperSection from "@/components/section/JumperSection";
 import { api, ENDPOINT } from "@/Library/api";
 
-
 export default function Home() {
     const list = [
         {
