@@ -53,5 +53,14 @@ export const media = (path) => `https://image.tmdb.org/t/p/original` + path;
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export const api = axios.create({
-    baseURL: API_BASE_URL
+    baseURL: API_BASE_URL,
+    // credentials
+    withCredentials: true,
 });
+
+
+
+export function getWatchUrl(vidId, mediaType, poster_path) {
+    const prefix = mediaType === "tv" ? "Tv" : "Movies";
+    return `${prefix}/watch?id=${vidId}&poster_path=${poster_path}`;
+}

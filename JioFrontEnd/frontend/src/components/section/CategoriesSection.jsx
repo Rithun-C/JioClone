@@ -1,8 +1,9 @@
 import React, { Suspense } from 'react'
 import { Skeleton } from '../atom/Skeleton'
-import { media } from '@/Library/api';
+import { getWatchUrl, media } from '@/Library/api';
 import Image from 'next/image';
 import { InboxIcon } from 'lucide-react';
+import Link from 'next/link';
 
 
 function CategoriesSection({ title, id,fetcher }) {
@@ -36,7 +37,8 @@ async function CategoriesContent({fetcher}) {
 
     return <ul className="flex gap-4 w-full overflow-scroll scrollbar-hide">
         {data?.map((post) => {
-            return <Image
+            return <Link href={getWatchUrl(post.id, post.media_type, post?.poster_path)} key={post.id}>
+                <Image
                 src={media(post?.poster_path)}
                 alt=""
                 width={200}
@@ -45,6 +47,7 @@ async function CategoriesContent({fetcher}) {
                 quality={30}
                 key={post.id}
             />
+            </Link>
         })}
     </ul>
 }
