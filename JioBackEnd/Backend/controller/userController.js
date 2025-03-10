@@ -1,96 +1,83 @@
 const UserModel = require("../model/userModel");
 
-const createUser = async function(req,res){
-    try{
-        const userObject = req.body;
-        const user = await UserModel.create(userObject);
-        res.status(201).json(user);
-    }
-    catch(err){
-        console.log(err);
-        res.status(500).json({
-            message : "internal server error",
-            error : err
-        })
-    }
-
-}
-
-const getAllUser = async (req, res) => {
+const getCurrentUser = async (req, res) => {
     try {
-
-        const user = await UserModel.find();
-        // if user is present -> send the resp
-        if (user.length != 0) {
-            res.status(200).json({
-                message: user
-            })
-            // if it's not there then send user not found 
-        } else {
-            res.status(404).json({
-                message: "did not get any user"
-            })
-        }
+        const userId = req.id;
+        const { _id, name, email, createdAt, wishlist, isPremium } = await UserModel.findById(userId);
+        res.status(200).json({
+            user: {
+                _id: _id,
+                name: name,
+                email: email,
+                createdAt: createdAt,
+                wishlist: wishlist,
+                isPremium: isPremium,
+            },
+            status: "success",
+        });
     } catch (err) {
         res.status(500).json({
-            status: "Internal server error",
-            message: err
-        })
+            message: err.message,
+            status: "failure",
+        });
     }
-
-}
-
-const getUser = async (req, res) => {
+};
+const getUserWishlist = async (req, res) => {
     try {
-        const id = req.params.id;
-        const user = await UserModel.findById(id);
-        // if user is present -> send the resp
-        if (user) {
-            res.status(200).json({
-                message: user
-            })
-            // if it's not there then send user not found 
-        } else {
-            res.status(404).json({
-                message: "did not get the user"
-            })
-        }
+        const userId = req.userId;
+        const user = await UserModel.findById(userId);
+        res.status(200).json({
+            data: user.wishlist,
+            status: "success",
+        });
     } catch (err) {
         res.status(500).json({
-            status: "Internal server error",
-            message: err.message
-        })
+            message: err.message,
+            status: "failure",
+        });
     }
+};
 
-}
 
-const deleteUser = async (req, res) => {
+const addToWishlist = async (req, res) => {
     try {
-        let { id } = req.params;
-        const user = await UserModel.findByIdAndDelete(id);
-        if (user === null) {
-            res.status(404).json({
-                status: "sucess",
-                message: "user does not exist",
-
-            })
-        } else {
-            res.status(200).json({
-                status: "sucess",
-                message: "user is deleted",
-                user: user
-            })
+        const userId = req.userId;
+        const { id, poster_path, name,media_type } = req.body;
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        if (user.wishlist.find(item => item.id === id)) {
+            return res.status(400).json({
+                message: "Item already in wishlist",
+                status: "failure",
+            });
         }
 
 
-    } catch (err) {
-        res.status(500).json({
-            status: "Internal server error",
-            message: err.message
-        })
-    }
-}
+        const wishlistItem = {
+            poster_path: poster_path,
+            name: name,
+            id: id,
+            media_type: media_type,
+        };
 
-module.exports = {
-    createUser, getAllUser, getUser, deleteUser
-}
+        user.wishlist.push(wishlistItem);
+        await UserModel.findOneAndUpdate(
+            { _id: userId },
+            { $push: { wishlist: wishlistItem } },
+            { new: true, upsert: true } // options to return the updated document and create if it doesn't exist
+        );
+
+        res.status(200).json({
+            status: "success",
+        });
+    } catch (error) {
+        console.log("error: ", error);
+        res.status(500).json({
+            message: error.message,
+            status: "failure",
+        });
+    }
+};
+module.exports = { getCurrentUser, getUserWishlist, addToWishlist };

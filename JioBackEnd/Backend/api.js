@@ -14,7 +14,11 @@ mongoose.connect(dbLink).then(function(connection){
     console.log("connected to db")
 }).catch(err => console.log(err))
 
-app.use(cors());
+const corsConfig = {
+    origin: true,
+    credentials: true,
+};
+app.use(cors(corsConfig));
 app.use(express.json());
 app.use(cookieParser());
 

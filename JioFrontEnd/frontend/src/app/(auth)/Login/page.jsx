@@ -54,7 +54,6 @@ export default function LoginPage() {
                 router.push("/");
             }
         } catch (err) {
-            console.log("err: ", err.response.data.message);
             toast("Invalid creds");
         } finally {
             setLoading(false);
